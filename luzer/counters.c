@@ -22,7 +22,11 @@ void __sanitizer_cov_pcs_init(uint8_t* pcs_beg, uint8_t* pcs_end);
 } /* extern "C" */
 #endif
 
-static const size_t kDefaultNumCounters = 1 << 20;
+// libFuzzer derives 8 features from every counter and folds them into a
+// feature set of 2^21 entries, so counters 2^18 apart alias anyway. It also
+// clears and scans every registered counter on each execution, so a larger
+// table costs time on every run without adding resolution.
+static const size_t kDefaultNumCounters = 1 << 18;
 
 // Number of counters and pctable entries that are allocated. Counter indices
 // are folded into this range by increment_counter.
